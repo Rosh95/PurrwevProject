@@ -4,20 +4,20 @@ import {
   Injectable,
   ForbiddenException,
 } from '@nestjs/common';
-import { CardsService } from '../../cards/cards.service';
+import { CommentsService } from '../../comments/comments.service';
 
 @Injectable()
-export class CardOwnerGuard implements CanActivate {
-  constructor(private readonly cardsService: CardsService) {}
+export class CommentOwnerGuard implements CanActivate {
+  constructor(private readonly commentsService: CommentsService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const userId = request.user.id;
-    const cardId = request.params.id; // Assuming card ID is in the route parameter
+    const userId = request.user.userId;
+    const commentId = request.params.id;
 
-    const card = await this.cardsService.findById(cardId);
-    if (!card || card.userId !== userId) {
-      throw new ForbiddenException('You do not own this card');
+    const comment = await this.commentsService.findById(+commentId);
+    if (!comment || comment.userId !== userId) {
+      throw new ForbiddenException('You do not own this comment');
     }
 
     return true;

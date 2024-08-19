@@ -4,20 +4,20 @@ import {
   Injectable,
   ForbiddenException,
 } from '@nestjs/common';
-import { ColumnsService } from '../../columns/columns.service';
+import { CardsService } from '../../cards/cards.service';
 
 @Injectable()
-export class ColumnOwnerGuard implements CanActivate {
-  constructor(private readonly columnsService: ColumnsService) {}
+export class CardOwnerGuard implements CanActivate {
+  constructor(private readonly cardsService: CardsService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const userId = request.user.id;
-    const columnId = request.params.id; // Assuming column ID is in the route parameter
+    const userId = request.user.userId;
+    const cardId = request.params.id;
 
-    const column = await this.columnsService.findById(columnId);
-    if (!column || column.userId !== userId) {
-      throw new ForbiddenException('You do not own this column');
+    const card = await this.cardsService.findById(+cardId);
+    if (!card || card.userId !== userId) {
+      throw new ForbiddenException('You do not own this card');
     }
 
     return true;
